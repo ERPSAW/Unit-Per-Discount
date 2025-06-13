@@ -1,0 +1,55 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-11 16:02:00.360229",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_qty",
+  "column_break_hufd",
+  "to_qty",
+  "column_break_qoml",
+  "discount_per_unit"
+ ],
+ "fields": [
+  {
+   "fieldname": "from_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "From Qty"
+  },
+  {
+   "fieldname": "column_break_hufd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "To Qty"
+  },
+  {
+   "fieldname": "column_break_qoml",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_per_unit",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Discount Per Unit"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-11 16:03:17.907614",
+ "modified_by": "Administrator",
+ "module": "Unit Discount",
+ "name": "Pricing Rule Slab",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,55 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-20 19:15:56.711466",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_value",
+  "column_break_kfbv",
+  "to_value",
+  "column_break_cgtm",
+  "applicable_rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "from_value",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "From Value"
+  },
+  {
+   "fieldname": "column_break_kfbv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_value",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "To Value"
+  },
+  {
+   "fieldname": "column_break_cgtm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "applicable_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Applicable Rate"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-27 19:26:05.291002",
+ "modified_by": "Administrator",
+ "module": "Unit Discount",
+ "name": "Scheme Slab",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

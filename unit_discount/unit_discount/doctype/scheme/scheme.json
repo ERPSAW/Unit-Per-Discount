@@ -1,0 +1,188 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:scheme_name",
+ "creation": "2024-10-20 19:07:50.211672",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "scheme_name",
+  "section_break_efcp",
+  "from_date",
+  "column_break_egum",
+  "to_date",
+  "section_break_bzma",
+  "applicable_for",
+  "column_break_fhat",
+  "customer_group",
+  "customers",
+  "section_break_oeuz",
+  "item_or_group",
+  "column_break_vuet",
+  "item_group",
+  "items",
+  "section_break_exas",
+  "based_on",
+  "column_break_gifi",
+  "discount_type",
+  "section_break_xkyg",
+  "scheme_items",
+  "ignore_sales_returns"
+ ],
+ "fields": [
+  {
+   "fieldname": "scheme_name",
+   "fieldtype": "Data",
+   "label": "Scheme Name",
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_efcp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_egum",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_bzma",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "applicable_for",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Applicable for",
+   "options": "\nCustomer\nCustomer Group",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fhat",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.applicable_for === 'Customer Group'",
+   "fieldname": "customer_group",
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "mandatory_depends_on": "eval:doc.applicable_for === 'Customer Group'",
+   "options": "Customer Group"
+  },
+  {
+   "depends_on": "eval:doc.applicable_for === 'Customer'",
+   "fieldname": "customers",
+   "fieldtype": "Table MultiSelect",
+   "label": "Customers",
+   "mandatory_depends_on": "eval:doc.applicable_for === 'Customer'",
+   "options": "Customer Item"
+  },
+  {
+   "fieldname": "section_break_exas",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "based_on",
+   "fieldtype": "Select",
+   "label": "Based on",
+   "options": "\nQuantity\nAmount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "scheme_items",
+   "fieldtype": "Table",
+   "label": "Scheme Items",
+   "options": "Scheme Slab",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_sales_returns",
+   "fieldtype": "Check",
+   "label": "Ignore Sales Returns"
+  },
+  {
+   "fieldname": "column_break_gifi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_type",
+   "fieldtype": "Select",
+   "label": "Discount Type",
+   "options": "Percentage\nGift Coupon\nCredit Note",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_xkyg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_oeuz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_or_group",
+   "fieldtype": "Select",
+   "label": "Item or Group",
+   "options": "\nItem\nItem Group"
+  },
+  {
+   "fieldname": "column_break_vuet",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.item_or_group == 'Item Group'",
+   "fieldname": "item_group",
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "link_filters": "[[\"Item Group\",\"is_group\",\"=\",0]]",
+   "options": "Item Group"
+  },
+  {
+   "depends_on": "eval:doc.item_or_group == 'Item'",
+   "fieldname": "items",
+   "fieldtype": "Table MultiSelect",
+   "label": "Items",
+   "options": "Scheme Items"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-14 12:18:26.879337",
+ "modified_by": "Administrator",
+ "module": "Unit Discount",
+ "name": "Scheme",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "scheme_name, from_date, to_date",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
