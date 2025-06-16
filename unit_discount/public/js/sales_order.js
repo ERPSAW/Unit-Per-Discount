@@ -23,23 +23,48 @@ frappe.ui.form.on('Sales Order', {
     }
 });
 
+
 frappe.ui.form.on('Sales Order Item', {
-    qty: function(frm, cdt, cdn) {
+    qty: async function(frm, cdt, cdn) {
+        await handle_item_discount_logic(frm, cdt, cdn);
+    },
+
+    item_code: function(frm, cdt, cdn) {
+        setTimeout(async () => {
+            await handle_item_discount_logic(frm, cdt, cdn);
+        }, 1000);
+    }
+});
+
+async function handle_item_discount_logic(frm, cdt, cdn) {
+    const table = frappe.ui.form.get_open_grid_form();
+    if (table) {
+        table.toggle_view(false);
+    }
+
+    frappe.dom.freeze("Fetching Discount Rules...");
+
+    try {
         let custom_item_group_total_qty = 0;
-        let row = locals[cdt][cdn];
+        const row = locals[cdt][cdn];
 
         frm.doc.items.forEach(tablerow => {
-            if (tablerow.item_group !== row.item_group) return;
-            custom_item_group_total_qty += tablerow.qty;
+            if (tablerow.item_group === row.item_group) {
+                custom_item_group_total_qty += tablerow.qty;
+            }
         });
-
-        frm.doc.items.forEach(tablerow => {
+        const promises = frm.doc.items.map(tablerow => {
             if (tablerow.item_group !== row.item_group) return;
             tablerow.custom_item_group_total_qty = custom_item_group_total_qty;
-            apply_pricing_rule(frm, tablerow, true);
-        })
-    },
-})
+            return apply_pricing_rule(frm, tablerow, true);
+        }).filter(Boolean);
+
+        await Promise.all(promises);
+    } finally {
+        frappe.dom.unfreeze();
+    }
+}
+
 
 function apply_pricing_rule(frm, item, calculate_taxes_and_totals) {
     var args = erpnext.TransactionController.prototype._get_args.call(frm.cscript, item);
