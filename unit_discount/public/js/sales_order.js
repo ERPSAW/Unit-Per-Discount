@@ -24,6 +24,7 @@ frappe.ui.form.on('Sales Order', {
 });
 
 
+
 frappe.ui.form.on('Sales Order Item', {
     qty: async function(frm, cdt, cdn) {
         await handle_item_discount_logic(frm, cdt, cdn);
@@ -33,7 +34,36 @@ frappe.ui.form.on('Sales Order Item', {
         setTimeout(async () => {
             await handle_item_discount_logic(frm, cdt, cdn);
         }, 1000);
-    }
+    },
+
+    items_remove: function(frm) {
+        setTimeout(async () => {
+            frappe.dom.freeze("Recalculating Discount Rules...");
+
+            try {
+                const item_group_totals = {};
+                frm.doc.items.forEach(row => {
+                    if (!row.item_group) return;
+                    if (!item_group_totals[row.item_group]) {
+                        item_group_totals[row.item_group] = 0;
+                    }
+                    item_group_totals[row.item_group] += row.qty;
+                });
+
+                const promises = [];
+
+                frm.doc.items.forEach(row => {
+                    if (!row.item_group) return;
+                    row.custom_item_group_total_qty = item_group_totals[row.item_group];
+                    promises.push(apply_pricing_rule(frm, row, true));
+                });
+
+                await Promise.all(promises);
+            } finally {
+                frappe.dom.unfreeze();
+            }
+        }, 300);
+    }    
 });
 
 async function handle_item_discount_logic(frm, cdt, cdn) {
