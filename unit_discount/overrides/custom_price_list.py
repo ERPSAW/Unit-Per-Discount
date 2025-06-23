@@ -117,7 +117,7 @@ def get_discount_rate(pricing_rule, item_details, args, conversion):
 
 	if pricing_rule.custom_is_slab_discount == 1:
 		if pricing_rule.apply_on == 'Item Group' and args.custom_item_group_total_qty:
-			qty = conversion * args.custom_item_group_total_qty
+			qty = args.custom_item_group_total_qty
 		else:
 			qty = conversion * args.qty
 
@@ -185,14 +185,6 @@ def custom_before_submit(doc, method):
         i.amount = i.custom_set_amount
 
 
-
-
-
-
-
-
-
-
-
-
-
+@frappe.whitelist()
+def calculate_uom_qty(item_code, uom):
+	return frappe.db.get_value("UOM Conversion Detail", { "parent": item_code, "uom": uom }, "conversion_factor")

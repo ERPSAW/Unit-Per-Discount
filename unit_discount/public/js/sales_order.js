@@ -23,8 +23,6 @@ frappe.ui.form.on('Sales Order', {
     }
 });
 
-
-
 frappe.ui.form.on('Sales Order Item', {
     qty: async function(frm, cdt, cdn) {
         await handle_item_discount_logic(frm, cdt, cdn);
@@ -47,7 +45,7 @@ frappe.ui.form.on('Sales Order Item', {
                     if (!item_group_totals[row.item_group]) {
                         item_group_totals[row.item_group] = 0;
                     }
-                    item_group_totals[row.item_group] += row.qty;
+                    item_group_totals[row.item_group] += row.qty * row.custom_additional_quantity;
                 });
 
                 const promises = [];
@@ -67,33 +65,49 @@ frappe.ui.form.on('Sales Order Item', {
 });
 
 async function handle_item_discount_logic(frm, cdt, cdn) {
-    const table = frappe.ui.form.get_open_grid_form();
-    if (table) {
-        table.toggle_view(false);
-    }
+	const table = frappe.ui.form.get_open_grid_form();
+	if (table) {
+		table.toggle_view(false);
+	}
+	frappe.dom.freeze("Fetching Discount Rules...");
 
-    frappe.dom.freeze("Fetching Discount Rules...");
+	try {
+		let custom_item_group_total_qty = 0;
+		const row = locals[cdt][cdn];
 
-    try {
-        let custom_item_group_total_qty = 0;
-        const row = locals[cdt][cdn];
+		for (let tablerow of frm.doc.items) {
+			if (tablerow.item_group === row.item_group) {
+				if (!tablerow.custom_additional_quantity || tablerow.custom_additional_quantity == 0) {
+					const res = await frappe.call({
+						method: "unit_discount.overrides.custom_price_list.calculate_uom_qty",
+						args: {
+							item_code: tablerow.item_code,
+							uom: "Litre"
+						}
+					});
+					const uom_qty = flt(res.message || 0);
+					tablerow.custom_additional_quantity = uom_qty;
+					custom_item_group_total_qty += flt(tablerow.qty) * uom_qty;
+				} else {
+					custom_item_group_total_qty += flt(tablerow.qty) * flt(tablerow.custom_additional_quantity);
+				}
+			}
+		}
+		const promises = [];
 
-        frm.doc.items.forEach(tablerow => {
-            if (tablerow.item_group === row.item_group) {
-                custom_item_group_total_qty += tablerow.qty;
-            }
-        });
-        const promises = frm.doc.items.map(tablerow => {
-            if (tablerow.item_group !== row.item_group) return;
-            tablerow.custom_item_group_total_qty = custom_item_group_total_qty;
-            return apply_pricing_rule(frm, tablerow, true);
-        }).filter(Boolean);
+		for (let tablerow of frm.doc.items) {
+			if (tablerow.item_group !== row.item_group) continue;
+			tablerow.custom_item_group_total_qty = custom_item_group_total_qty;
+			promises.push(apply_pricing_rule(frm, tablerow, true));
+		}
 
-        await Promise.all(promises);
-    } finally {
-        frappe.dom.unfreeze();
-    }
+		await Promise.all(promises);
+		frm.refresh_field("items");
+	} finally {
+		frappe.dom.unfreeze();
+	}
 }
+
 
 
 function apply_pricing_rule(frm, item, calculate_taxes_and_totals) {
