@@ -128,8 +128,8 @@ def get_discount_rate(pricing_rule, item_details, args, conversion):
 			FROM
 				`tabPricing Rule Slab`
 			WHERE 
-				(%s between from_qty and to_qty and to_qty !=0)
-				OR (%s >= from_qty and to_qty = 0)
+				((%s between from_qty and to_qty and to_qty !=0)
+				OR (%s >= from_qty and to_qty = 0))
 				and parent = %s
 			LIMIT 1
 		""", (qty, qty, pricing_rule.name), as_dict=True)
