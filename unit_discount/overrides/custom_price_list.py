@@ -168,12 +168,12 @@ def rate_amount_update():
 		frappe.db.set_value("Sales Order Item", i["name"], "amount", i["custom_set_amount"])
 
 		frappe.db.commit()
-	if sales_order_name:
-		frappe.log_error(message=total, title='total')
-		frappe.db.set_value("Sales Order", sales_order_name, "total", total)
-		frappe.db.set_value("Sales Order", sales_order_name, "grand_total", total)
-		frappe.db.set_value("Sales Order", sales_order_name, "rounded_total", total)
-		frappe.db.commit()
+	# if sales_order_name:
+	# 	frappe.log_error(message=total, title='total')
+	# 	frappe.db.set_value("Sales Order", sales_order_name, "total", total)
+	# 	frappe.db.set_value("Sales Order", sales_order_name, "grand_total", total)
+	# 	frappe.db.set_value("Sales Order", sales_order_name, "rounded_total", total)
+	# 	frappe.db.commit()
 
 	frappe.response["message"] = "Saved Sucessfully"
 
