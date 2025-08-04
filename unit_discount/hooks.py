@@ -137,6 +137,7 @@ doc_events = {
 		# "on_update": "method",
 		# "on_cancel": "method",
 		# "on_trash": "method",
+	"validate": "unit_discount.overrides.custom_price_list.custom_before_submit",
         "before_submit": "unit_discount.overrides.custom_price_list.custom_before_submit",
 	}
 }
