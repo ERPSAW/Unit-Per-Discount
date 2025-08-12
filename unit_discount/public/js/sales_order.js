@@ -1,10 +1,18 @@
 frappe.ui.form.on('Sales Order', {
-    before_save: function(frm) {
+    before_save: async function(frm) {
+        frappe.dom.freeze("Saving Sales Order...");
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        await frm.trigger("ignore_pricing_rule");
+
+        await delay(2000);
+
         frm.doc.items.forEach(row => {
             row.custom_set_rate_ = row.rate;
             row.custom_set_amount = row.amount;
         });
         frm.refresh_field("items");
+        frappe.dom.unfreeze();
     },
     after_save: function(frm) {
         frappe.call({
