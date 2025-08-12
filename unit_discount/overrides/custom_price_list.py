@@ -203,7 +203,7 @@ class custom_calculate_taxes_and_totals(calculate_taxes_and_totals):
 				for d in get_applied_pricing_rules(item.pricing_rules):
 					pricing_rule = frappe.get_cached_doc("Pricing Rule", d)
 
-					if pricing_rule.margin_rate_or_amount and (
+					if (pricing_rule.margin_rate_or_amount or pricing_rule.custom_margin_rate_per_unit) and (
 						(
 							pricing_rule.currency == self.doc.currency
 							and pricing_rule.margin_type in ["Amount", "Percentage", "Per Unit"]
@@ -211,9 +211,12 @@ class custom_calculate_taxes_and_totals(calculate_taxes_and_totals):
 						or pricing_rule.margin_type == "Percentage"
 					):
 						if pricing_rule.margin_type == "Per Unit":
-							pricing_rule.margin_type = "Amount"
-						item.margin_type = pricing_rule.margin_type
-						item.margin_rate_or_amount = pricing_rule.margin_rate_or_amount
+							item.margin_type = "Amount"
+							conversion = get_item_conversion(item.get('item_code'), pricing_rule.custom_margin_unit)
+							item.margin_rate_or_amount = pricing_rule.custom_margin_rate_per_unit * conversion
+						else:
+							item.margin_type = pricing_rule.margin_type
+							item.margin_rate_or_amount = pricing_rule.margin_rate_or_amount
 						has_margin = True
 
 				if not has_margin:
