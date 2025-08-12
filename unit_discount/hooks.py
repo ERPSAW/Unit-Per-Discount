@@ -244,6 +244,9 @@ from unit_discount.overrides.custom_price_list import apply_price_discount_rule
 from erpnext.accounts.doctype.pricing_rule import pricing_rule
 pricing_rule.apply_price_discount_rule = apply_price_discount_rule
 
+from erpnext.controllers.taxes_and_totals import calculate_taxes_and_totals
+from unit_discount.overrides.custom_price_list import custom_calculate_taxes_and_totals
+calculate_taxes_and_totals.calculate_margin = custom_calculate_taxes_and_totals.calculate_margin
 
 from erpnext.accounts.doctype.promotional_scheme import promotional_scheme
 from unit_discount.overrides.custom_promotional_scheme import price_discount_fields
