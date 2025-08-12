@@ -6,6 +6,8 @@ import frappe
 from frappe import _, throw
 from frappe.model.document import Document
 from frappe.utils import cint, flt
+from erpnext.controllers.taxes_and_totals import calculate_taxes_and_totals
+from erpnext.accounts.doctype.pricing_rule.utils import get_applied_pricing_rules
 
 @frappe.whitelist()
 def apply_price_discount_rule(pricing_rule, item_details, args):
@@ -188,3 +190,50 @@ def custom_before_submit(doc, method):
 @frappe.whitelist()
 def calculate_uom_qty(item_code, uom):
 	return frappe.db.get_value("UOM Conversion Detail", { "parent": item_code, "uom": uom }, "conversion_factor")
+
+
+
+class custom_calculate_taxes_and_totals(calculate_taxes_and_totals):
+	def calculate_margin(self, item):
+		rate_with_margin = 0.0
+		base_rate_with_margin = 0.0
+		if item.price_list_rate:
+			if item.pricing_rules and not self.doc.ignore_pricing_rule:
+				has_margin = False
+				for d in get_applied_pricing_rules(item.pricing_rules):
+					pricing_rule = frappe.get_cached_doc("Pricing Rule", d)
+
+					if pricing_rule.margin_rate_or_amount and (
+						(
+							pricing_rule.currency == self.doc.currency
+							and pricing_rule.margin_type in ["Amount", "Percentage", "Per Unit"]
+						)
+						or pricing_rule.margin_type == "Percentage"
+					):
+						if pricing_rule.margin_type == "Per Unit":
+							pricing_rule.margin_type = "Amount"
+						item.margin_type = pricing_rule.margin_type
+						item.margin_rate_or_amount = pricing_rule.margin_rate_or_amount
+						has_margin = True
+
+				if not has_margin:
+					item.margin_type = None
+					item.margin_rate_or_amount = 0.0
+
+			if not item.pricing_rules and flt(item.rate) > flt(item.price_list_rate):
+				item.margin_type = "Amount"
+				item.margin_rate_or_amount = flt(
+					item.rate - item.price_list_rate, item.precision("margin_rate_or_amount")
+				)
+				item.rate_with_margin = item.rate
+
+			elif item.margin_type and item.margin_rate_or_amount:
+				margin_value = (
+					item.margin_rate_or_amount
+					if item.margin_type == "Amount"
+					else flt(item.price_list_rate) * flt(item.margin_rate_or_amount) / 100
+				)
+				rate_with_margin = flt(item.price_list_rate) + flt(margin_value)
+				base_rate_with_margin = flt(rate_with_margin) * flt(self.doc.conversion_rate)
+
+		return rate_with_margin, base_rate_with_margin
