@@ -32,8 +32,10 @@ frappe.ui.form.on('Sales Order', {
 });
 
 frappe.ui.form.on('Sales Order Item', {
-    qty: async function(frm, cdt, cdn) {
-        await handle_item_discount_logic(frm, cdt, cdn);
+    qty: function(frm, cdt, cdn) {
+        setTimeout(async () => {
+            await handle_item_discount_logic(frm, cdt, cdn);
+        }, 1000);
     },
 
     item_code: function(frm, cdt, cdn) {
@@ -112,7 +114,9 @@ async function handle_item_discount_logic(frm, cdt, cdn) {
 		await Promise.all(promises);
 		frm.refresh_field("items");
 	} finally {
-		frappe.dom.unfreeze();
+        setTimeout(() => {
+            frappe.dom.unfreeze();
+        }, 1000);
 	}
 }
 
